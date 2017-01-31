@@ -23,6 +23,8 @@ int main(int argc, char* argv[]){
 	std::cout << "String: " << someString2 << std::endl;
 	reverse2(someString2);
 	std::cout << "Reversed string: " << someString2 << "\n\n";
+
+	return 0;
 }
 
 void reverse(char* str){
