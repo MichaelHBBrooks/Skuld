@@ -6,12 +6,12 @@
  * reverse2's std::reverse function.
  */
 
-void reverse(char* str);
-void reverse2(char* str);
-
 #include<algorithm> //Used for std::reverse
 #include<cstring>   //Used for std::strlen
 #include<iostream>  //Used for std::cout, std::endl
+
+void reverse(char* str);
+void reverse2(char* str);
 
 int main(int argc, char* argv[]){
 	char someString[] = "asdf";
