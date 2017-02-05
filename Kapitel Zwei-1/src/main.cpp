@@ -10,7 +10,7 @@
  *
  * I have come to realize that I really should look into smart pointers for C++11. But how common
  * is it for companies to be using C++11? Any code base older than a decade would certainly not be
- * using them. I need to harden my
+ * using them. I need to harden my knowledge on memory management.
  */
 
 #include<iostream>
