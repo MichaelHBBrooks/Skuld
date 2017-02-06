@@ -18,6 +18,7 @@
 #include"LinkedList.h"
 
 void pruneList(LinkedList& list);
+void inefficientPruneList(LinkedList& list);
 
 int main(int argc, char* argv[]){
 	LinkedList list;
@@ -33,7 +34,16 @@ int main(int argc, char* argv[]){
 	pruneList(list);
 	list.printLinkedList(*list.head);
 
-	std::cout << "Exiting program.\n";
+	LinkedList list2;
+	list2.head = new Node(100);
+	list2.appendToTail(101);
+	list2.appendToTail(101);  //  Duplicate item.
+	list2.appendToTail(102);
+	list2.appendToTail(103);
+	list2.appendToTail(103);  //  Duplicate item.
+	list2.printLinkedList(*list2.head);
+	inefficientPruneList(list2);
+	list2.printLinkedList(*list2.head);
 
 	return 0;
 }
@@ -58,5 +68,30 @@ void pruneList(LinkedList& list){
 			trailing_node = itr;
 		}
 		itr = trailing_node->next;
+	}
+}
+
+/**
+ * For each element, traverse the entire linked list to guarantee there are no duplicates. If a
+ * duplicate is found, remove it. This is done without buffers and is really, really inefficient.
+ * @param list
+ */
+void inefficientPruneList(LinkedList& list){
+	if(list.head == NULL){
+		return;
+	}
+	for(Node* itr1 = list.head; itr1 != NULL; itr1 = itr1->next){
+		Node* previous_node = itr1;
+		Node* itr2 = itr1->next;
+		while(itr2 != NULL){
+			if(itr2->data == itr1->data){
+				//  Duplicate found!
+				previous_node->next = itr2->next;
+				delete itr2;
+			}else{
+				previous_node = itr2;
+			}
+			itr2 = previous_node->next;
+		}
 	}
 }
