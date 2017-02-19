@@ -21,18 +21,19 @@
 #include"Stack.h"
 
 void hanoi(Stack& source, Stack& temp, Stack& destination, unsigned int size);
+void hanoi2(Stack& source, Stack& temp, Stack& destination, unsigned int size);
 
 int main(){
 	Stack tower1(1);
 	Stack tower2(2);
 	Stack tower3(3);
-	unsigned int size = 4;
+	unsigned int size = 5;
 
 	//  First we set up the Tower of Hanoi. The smallest number will be on top of course.
 	for(unsigned int x = size; x > 0; x--){
 		tower1.push(x);
 	}
-	hanoi(tower1, tower2, tower3, size);
+	hanoi2(tower1, tower2, tower3, size);
 	while(!tower3.isEmpty()){
 		std::cout << tower3.pop() << std::endl;
 	}
@@ -51,5 +52,16 @@ void hanoi(Stack& source, Stack& temp, Stack& destination, unsigned int size){
 		std::cout << "Assigning " << val2 << " from tower " << source.name_ << " to tower " << destination.name_ << std::endl;
 		destination.push(val2);
 		hanoi(temp, source, destination, size-1);
+	}
+}
+
+//  Without the instructions being sent to console.
+void hanoi2(Stack& source, Stack& temp, Stack& destination, unsigned int size){
+	if(size == 1){
+		destination.push(source.pop());
+	}else{
+		hanoi2(source, destination, temp, size-1);
+		destination.push(source.pop());
+		hanoi2(temp, source, destination, size-1);
 	}
 }
