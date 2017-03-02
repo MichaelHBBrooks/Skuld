@@ -4,6 +4,14 @@
  *
  * Programmer response:
  * Why, hello there, breadth first search.
+ *
+ * I had a good idea of what to do, but using a vector of a forward_list of my BinaryTreeNode*
+ * seemed a little far fetched. I'd have to ask the interviewer what format they really expected the
+ * data to be returned as.
+ *
+ * After looking quickly at the solution in the back of the book, I saw they had an implementation
+ * for depth first search and breadth first search. Furthermore, it confirmed what I was thinking
+ * about the vector<forward_list<BinaryTreeNode*>> idea.
  */
 
 #include<iostream>
@@ -28,7 +36,13 @@ int main(){
 	tree.insert(8);
 
 	vector<forward_list<BinaryTreeNode*>> depth_lists = separateDepths(tree);
-
+	for(unsigned int x = 0; x < depth_lists.size(); x++){
+		cout << x << ": ";
+		for(auto y: depth_lists[x]){
+			cout << y->data_ << ' ';
+		}
+		cout << endl;
+	}
 
 	return 0;
 }
@@ -40,11 +54,18 @@ vector<forward_list<BinaryTreeNode*>> separateDepths(BinaryTree& tree_){
 		return depth_lists;
 	}
 	current.push_front(tree_.root_);
-//	while(!current.empty()){
-//		depth_lists.push_back(current);
-//		forward_list<BinaryTreeNode*> parents = current;
-//		current = new forward_list<BinaryTreeNode*>;
-//
-//	}
+	while(!current.empty()){
+		depth_lists.push_back(current);
+		forward_list<BinaryTreeNode*> parents = current;
+		current.clear();
+		for(auto itr: parents){
+			if(itr->left_ != NULL){
+				current.push_front(itr->left_);
+			}
+			if(itr->right_ != NULL){
+				current.push_front(itr->right_);
+			}
+		}
+	}
 	return depth_lists;
 }
