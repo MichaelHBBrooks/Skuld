@@ -23,8 +23,13 @@
  * I suspect the reason I discounted negative values is because all of the previous questions only
  * dealt with positive integers. This threw me off. My functions will only work with positive
  * integers.
+ *
+ *
+ * I've created a second set of functions to handle negative values, similar to the book's
+ * suggestion.
  */
 
+#include<algorithm>
 #include<iostream>
 #include<vector>
 #include"BinaryTree.h"
@@ -33,6 +38,11 @@ using namespace std;
 
 void traverseTree(const BinaryTreeNode* node_, int sum_, vector<vector<int>>& list_);
 void findSums(const BinaryTreeNode* node_, int sum_, vector<vector<int>>& list_, vector<int>& ongoing_list_);
+
+void findSum2(BinaryTreeNode* node_, const int& sum_, vector<int> path_, int level_);
+void findSum2(BinaryTreeNode* node_, const int& sum_);
+void printPath2(const vector<int>& path_, const int& start_, const int& end_);
+int depth2(BinaryTreeNode* node_);
 
 int main(int argc, char* argv[]){
 	BinaryTree some_tree;
@@ -80,5 +90,47 @@ void findSums(const BinaryTreeNode* node_, int sum_, vector<vector<int>>& list_,
 		findSums(node_->left_, sum_, list_, ongoing_list_);
 		findSums(node_->right_, sum_, list_, ongoing_list_);
 		ongoing_list_.pop_back();
+	}
+}
+
+
+void findSum2(BinaryTreeNode* node_, const int& sum_, vector<int> path_, int level_){
+	if(node_ == NULL){
+		return;
+	}
+	path_[level_] = node_->data_;
+
+	int total = 0;
+	for(int i = level_; i >= 0; i--){
+		total += path_[i];
+		if(total == sum_){
+			printPath2(path_, i, level_);
+		}
+	}
+
+	findSum2(node_->left_, sum_, path_, level_+1);
+	findSum2(node_->right_, sum_, path_, level_+1);
+}
+
+void findSum2(BinaryTreeNode* node_, const int& sum_){
+	int depth = depth2(node_);
+	vector<int> path(depth);
+	findSum2(node_, sum_, path, 0);
+}
+
+void printPath2(const vector<int>& path_, const int& start_, const int& end_){
+	for(auto val : path_){
+		cout << val << ' ';
+	}
+	cout << endl;
+}
+
+int depth2(BinaryTreeNode* node_){
+	if(node_ == NULL){
+		return 0;
+	}else{
+		int left_depth = depth2(node_->left_);
+		int right_depth = depth2(node_->right_);
+		return 1 + max(left_depth, right_depth);
 	}
 }
