@@ -13,35 +13,64 @@
  * I am weak on bit manipulation. Simply put, it's never come up before. I've done the homework on
  * it in college so I know I can do it. The tricks will escape me until I review and practice them a
  * bit.
+ *
+ * I didn't need this, but I'm writing it here as knowledge that I learned while experimenting:
+ *   unsigned int max = std::numeric_limits<unsigned int>::max();
+ *
+ * I misinterpreted the question at first. I thought it was shifting the values to the left to make
+ * room for the bits we planned to merge in. After further inspection, I realized that it keeps the
+ * original bits in their original location with the merged value superimposed onto it.
+ *
+ * To handle this I knew which bits needed to be overwritten, so I created a mask, shifted it into
+ * place, erased the bits that were in the original value, then ANDed the merge value into place
+ * after some more shifting.
+ *
+ * Overall, not too bad of a problem. I had to print out my results an awful lot to visualize it
+ * however. I'm hoping this isn't a question that is asked on paper. It's very easy for me to get a
+ * off-by-one error somewhere.
  */
 
 #include<bitset>
 #include<iostream>
+#include<limits>
+#include<string>
 
-void printBinary(const int& number_);
-int spliceBinary(const int& b_num1_, const int& b_num2_, const int start_, const int end_);
+void printBinary(const unsigned int& number_, std::string label_);
+unsigned int spliceBinary(const unsigned int& b_num1_, const unsigned int& b_num2_, const unsigned int start_, const unsigned int end_);
 
 int main(int argc_, char* argv_[]){
-	//int a = 0b00000011;
-	int N = 0b10000000000;
-	int M = 0b10011;
-	printBinary(N);
-	printBinary(M);
+	//unsigned int N = 0b10000000000;
+	unsigned int N = 0b10000000001;
+	unsigned int M = 0b10011;
+	printBinary(N,"N");
+	printBinary(M,"M");
 
-	int result = spliceBinary(N, M, 2, 6);
+	unsigned int result = spliceBinary(N, M, 2, 6);
 
-	printBinary(result);
+	printBinary(result,"Result");
 
 	return 0;
 }
 
-void printBinary(const int& number_){
-	std::cout << "Int: " << number_ << '\n';
-	std::cout << "Binary: " << std::bitset<sizeof(int)*8>(number_) << '\n';
+void printBinary(const unsigned int& number_, std::string label_){
+	std::cout << label_ << '\n';
+	std::cout << "\tUnsigned Int: " << number_ << '\n';
+	std::cout << "\tBinary: " << std::bitset<sizeof(unsigned int)*8>(number_) << '\n';
 }
 
-int spliceBinary(const int& b_num1_, const int& b_num2_, const int start_, const int end_){
-	int shifted_splice = b_num2_ << start_;
-	printBinary(shifted_splice);
-	return 0;
+/**
+ * @param b_num1_ The original value.
+ * @param b_num2_ The value being merged into the original value.
+ * @param start_ The starting location where the merged value will be inserted into.
+ * @param end_ The last bit location where the merged value stops.
+ * @return The spliced values of the first and second numbers.
+ */
+unsigned int spliceBinary(const unsigned int& b_num1_, const unsigned int& b_num2_, const unsigned int start_, const unsigned int end_){
+	unsigned int diff = end_ - start_;
+	unsigned int mask = (1 << (diff+1))-1;
+	mask <<= start_;
+	printBinary(mask, "Mask");
+	unsigned int spliced_val = (b_num1_ & ~mask) | (b_num2_<<start_);
+
+	return spliced_val;
 }
