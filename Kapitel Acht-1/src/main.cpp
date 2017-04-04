@@ -17,7 +17,7 @@
 class Card{
 public:
 	const std::string game_name_;
-	Card(std::string new_game_name_) : game_name_(new_game_name_){}
+	Card(const std::string& new_game_name_) : game_name_(new_game_name_){}
 };
 
 enum class Suit{
