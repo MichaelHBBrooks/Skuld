@@ -8,6 +8,11 @@
  *
  * Programmer response:
  * This is looking like 3 concrete classes, one abstract/pure virtual class to handle everyone.
+ *
+ * After writing out the three loops in the dispatchCall function, I could've saved some time by
+ * condensing things into a single multi-dimensional vector. This has pros and cons though. In the
+ * future, this setup does make dealing with respondents, managers, and directors differently
+ * easier.
  */
 
 #include<iostream>
@@ -19,39 +24,66 @@ enum class EmployeeRank{
 
 class Employee{
 public:
-	Employee(EmployeeRank new_rank_): busy_(false), rank_(new_rank_){
+	Employee() :
+			busy_(false), rank_(EmployeeRank::respondent){
 	}
-	bool isBusy(){
-		return busy_;
+
+	Employee(EmployeeRank new_rank_) :
+			busy_(false), rank_(new_rank_){
 	}
-	void assignCall(){
-//		std::cout << "Employee assigned!\n";
-		busy_ = true;
+	virtual ~Employee(){
 	}
+
+	virtual bool isBusy() = 0;
+	virtual void assignCall() = 0;
 protected:
 	bool busy_;
 	EmployeeRank rank_;
 };
 
-class Respondent: protected Employee{
+class Respondent: public Employee{
 public:
-	Respondent(): Employee(EmployeeRank::respondent){
+	Respondent() :
+			Employee(EmployeeRank::respondent){
+	}
+	bool isBusy() override{
+		return busy_;
+	}
+	void assignCall(){
+		busy_ = true;
 	}
 };
 
-class Manager: protected Employee{
-	Manager(): Employee(EmployeeRank::manager){
+class Manager: public Employee{
+public:
+	Manager() :
+			Employee(EmployeeRank::manager){
+	}
+	bool isBusy() override{
+		return busy_;
+	}
+	void assignCall(){
+		busy_ = true;
 	}
 };
 
-class Director: protected Employee{
-	Director(): Employee(EmployeeRank::director){
+class Director: public Employee{
+public:
+	Director() :
+			Employee(EmployeeRank::director){
+	}
+	bool isBusy() override{
+		return busy_;
+	}
+	void assignCall(){
+		busy_ = true;
 	}
 };
 
 class Call{
 public:
-	Call(): min_rank_to_handle_(EmployeeRank::respondent){
+	Call() :
+			min_rank_to_handle_(EmployeeRank::respondent){
 	}
 	void incrementRank(){
 		if(min_rank_to_handle_ == EmployeeRank::respondent){
@@ -71,30 +103,74 @@ public:
 		num_respondent_ = 10;
 		num_manager_ = 5;
 		num_director_ = 2;
-		respondents_.reserve(num_respondent_);
-		managers_.reserve(num_manager_);
-		directors_.reserve(num_director_);
+
+		respondents_.resize(num_respondent_);
+		managers_.resize(num_manager_);
+		directors_.resize(num_director_);
 	}
 
 	void dispatchCall(){
-		unsigned int x = last_called_respondent_+1;
-		while(x != last_called_respondent_){
-//			if(!respondents_[x].isBusy()){
-//				respondents_[x].assignCall();
-//				last_called_respondent_++;
-//				if(last_called_respondent_ > num_respondent_){
-//					last_called_respondent_ = 0;
-//				}
-//				return;
-//			}
-			std::cout << "x = " << x << std::endl;
-			x++;
-			if(x > num_respondent_){
+		unsigned int x = last_called_respondent_ + 1;
+		while(true){
+			if(x >= num_respondent_){
 				x = 0;
-				std::cout << "reset\n";
 			}
+			std::cout << "Respondent x = " << x << std::endl;
+			if(!respondents_[x].isBusy()){
+				respondents_[x].assignCall();
+				std::cout << "Assigned Respondent " << x << std::endl;
+				last_called_respondent_++;
+				if(last_called_respondent_ >= num_respondent_){
+					last_called_respondent_ = 0;
+				}
+				return;
+			}
+			if(x == last_called_respondent_){
+				break;
+			}
+			x++;
 		}
-
+		//  I admit this is pretty messy and could be done differently.
+		x = last_called_manager_ + 1;
+		while(true){
+			if(x >= num_manager_){
+				x = 0;
+			}
+			std::cout << "Manager x = " << x << std::endl;
+			if(!managers_[x].isBusy()){
+				managers_[x].assignCall();
+				std::cout << "Assigned Manager " << x << std::endl;
+				last_called_manager_++;
+				if(last_called_manager_ >= num_manager_){
+					last_called_manager_ = 0;
+				}
+				return;
+			}
+			if(x == last_called_manager_){
+				break;
+			}
+			x++;
+		}
+		x = last_called_director_ + 1;
+		while(true){
+			if(x >= num_director_){
+				x = 0;
+			}
+			std::cout << "Director x = " << x << std::endl;
+			if(!directors_[x].isBusy()){
+				directors_[x].assignCall();
+				std::cout << "Assigned Director " << x << std::endl;
+				last_called_director_++;
+				if(last_called_director_ >= num_director_){
+					last_called_director_ = 0;
+				}
+				return;
+			}
+			if(x == last_called_director_){
+				break;
+			}
+			x++;
+		}
 	}
 
 private:
@@ -107,11 +183,17 @@ private:
 	std::vector<Respondent> respondents_;
 	std::vector<Manager> managers_;
 	std::vector<Director> directors_;
+	//  I could do this, but I don't want to delve into smart pointers yet. While I know vaguely how
+	//  they work, I would prefer not to implement them until I know how many companies plan on
+	//  using them.
+	//std::vector<std::vector<Employee*>> employees_;
 };
 
 int main(){
 	CallCenter cc1;
-	cc1.dispatchCall();
+	for(int x = 0; x < 13; x++){
+		cc1.dispatchCall();
+	}
 	std::cout << "done\n";
 	return 0;
 }
